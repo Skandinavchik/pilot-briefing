@@ -1,1 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+@use './styles/theme/theme.scss';
+@use './styles/overrides/button.scss';
+@import './styles/tailwind.css';
+
+body {
+  font-family: Nunito Sans;
+  background: var(--mat-sys-surface);
+}
