@@ -28,22 +28,22 @@ const atLeastOneChecked: ValidatorFn = (control: AbstractControl): ValidationErr
   templateUrl: './briefing-form.html',
 })
 export class BriefingForm {
-  private readonly _formBuilder = inject(FormBuilder)
+  private readonly formBuilder = inject(FormBuilder)
 
-  readonly briefingForm = this._formBuilder.nonNullable.group({
-    reportTypes: this._formBuilder.nonNullable.group(
-      {
-        METAR: false,
-        SIGMET: false,
-        TAF_LONGTAF: false,
-      },
-      { validators: atLeastOneChecked },
+  briefingForm = this.formBuilder.nonNullable.group({
+    reportTypes: this.formBuilder.nonNullable.group({
+      METAR: false,
+      SIGMET: false,
+      TAF_LONGTAF: false,
+    },
+    { validators: atLeastOneChecked },
     ),
-    airports: this._formBuilder.nonNullable.control<string[]>([]),
-    countries: this._formBuilder.nonNullable.control<string[]>([]),
+    airports: [[]],
+    countries: [[]],
   })
 
   onSubmit(): void {
+    if (this.briefingForm.invalid) return
     console.log(this.briefingForm.getRawValue())
   }
 }

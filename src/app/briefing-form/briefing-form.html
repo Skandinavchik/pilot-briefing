@@ -11,17 +11,15 @@
 
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Airports</mat-label>
-    <input placeholder="Search ICAO..." formControlName="airports" />
-    <mat-hint>Search by ICAO or Name</mat-hint>
+    <input matInput placeholder="Airports" formControlName="airports" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Countries</mat-label>
-    <mat-input placeholder="Search countries..." formControlName="countries" />
-    <mat-hint>Select one or more countries</mat-hint>
+    <input matInput placeholder="Countries" formControlName="countries" />
   </mat-form-field>
 
-  <button mat-flat-button color="primary" type="submit" class="mt-4 self-start" [disabled]="briefingForm.invalid">
+  <button matButton="filled" class="mt-4 self-start" >
     Create Briefing
   </button>
 </form>

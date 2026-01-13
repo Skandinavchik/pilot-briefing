@@ -2,46 +2,6 @@
   <section>
     <h1 class="mb-6 text-2xl font-bold">{{ title() }}</h1>
 
-    <app-briefing-form (search)="onSearch($event)"></app-briefing-form>
+    <app-briefing-form />
   </section>
-
-  <!-- Results -->
-  @if (results().length > 0) {
-  <section>
-    <h2 class="mb-4 text-xl font-bold">Briefing Results</h2>
-
-    @for (group of groupedResults; track group[0]) {
-    <div class="mb-6 last:mb-0">
-      <h3 class="mb-2 border-b border-gray-200 pb-2 text-lg font-semibold text-blue-800">
-        Station: {{ group[0] }}
-      </h3>
-
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-full text-left text-sm">
-          <thead class="bg-gray-50 text-gray-700">
-            <tr>
-              <th class="px-4 py-2 font-semibold">Type</th>
-              <th class="px-4 py-2 font-semibold">Time</th>
-              <th class="px-4 py-2 font-semibold">Content</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            @for (item of group[1]; track item.receptionTime) {
-            <tr class="hover:bg-gray-50">
-              <td class="whitespace-nowrap px-4 py-3 font-medium">{{ item.queryType }}</td>
-              <td class="whitespace-nowrap px-4 py-3 text-gray-600">
-                {{ item.reportTime | date: 'medium' }}
-              </td>
-              <td class="px-4 py-3 font-mono text-gray-800">
-                <div [innerHTML]="item.textHTML"></div>
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-    }
-  </section>
-  }
 </main>
