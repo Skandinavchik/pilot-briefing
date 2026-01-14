@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core'
+import { Component, DestroyRef, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -24,6 +25,7 @@ import { BriefingService } from '../services/briefing.service'
 })
 export class BriefingForm {
   private readonly formBuilder = inject(FormBuilder)
+  private readonly destroyRef = inject(DestroyRef)
   public readonly briefingService = inject(BriefingService)
 
   briefingForm = this.formBuilder.nonNullable.group(
@@ -48,9 +50,12 @@ export class BriefingForm {
       return
     }
 
-    this.briefingService.getBriefing(this.briefingForm.getRawValue()).subscribe({
-      next: response => console.log('API Response:', response),
-      error: error => console.error('API Error:', error),
-    })
+    this.briefingService
+      .getBriefing(this.briefingForm.getRawValue())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => console.log('API Response:', response),
+        error: error => console.error('API Error:', error),
+      })
   }
 }
