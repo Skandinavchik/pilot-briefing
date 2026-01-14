@@ -37,12 +37,6 @@ export default defineConfig([
       '@stylistic/no-trailing-spaces': ['error', { skipBlankLines: false }],
       '@stylistic/comma-spacing': ['error', { before: false, after: true }],
       '@stylistic/max-len': ['error', { code: 120, ignoreTrailingComments: true, ignoreStrings: true }],
-      '@stylistic/type-annotation-spacing': ['error', {
-        before: false,
-        after: true,
-        overrides: { arrow: { before: true, after: true },
-        },
-      }],
     },
   },
 ])
