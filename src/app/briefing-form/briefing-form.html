@@ -1,25 +1,46 @@
 <form [formGroup]="briefingForm" (ngSubmit)="onSubmit()"
-  class="p-4 flex flex-col gap-4 rounded-lg border border-(--mat-sys-outline-variant)">
-  <div>
-    <label class="mb-2 block font-medium">Report Types:</label>
-    <div class="flex gap-4" formGroupName="reportTypes">
-      <mat-checkbox formControlName="METAR">METAR</mat-checkbox>
-      <mat-checkbox formControlName="SIGMET">SIGMET</mat-checkbox>
-      <mat-checkbox formControlName="TAF_LONGTAF">TAF</mat-checkbox>
+  class="p-4 flex flex-col gap-4 rounded-lg border border-(--mat-sys-outline-variant) shadow-md">
+  <h2 class="text-xl font-semibold">Pilot Briefing Request</h2>
+
+  <div class="flex flex-col gap-2" formGroupName="reportTypes">
+    <span class="font-medium">Request Type</span>
+    <div class="flex gap-4">
+      <mat-checkbox formControlName="metar">METAR</mat-checkbox>
+      <mat-checkbox formControlName="sigmet">SIGMET</mat-checkbox>
+      <mat-checkbox formControlName="taf">TAF</mat-checkbox>
     </div>
+    @if (briefingForm.get('reportTypes')?.hasError('atLeastOneSelected') && briefingForm.get('reportTypes')?.touched) {
+    <mat-error>At least one report type must be selected</mat-error>
+    }
   </div>
 
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Airports</mat-label>
-    <input matInput placeholder="Airports" formControlName="airports" />
-  </mat-form-field>
+  <div class="flex flex-col sm:flex-row gap-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Airports</mat-label>
+      <input matInput formControlName="stations" placeholder="e.g. LZIB LKPR" />
+      @if (briefingForm.get('stations')?.hasError('pattern')) {
+      <mat-error>4 uppercase letters separated by spaces (e.g. LZIB LKPR)</mat-error>
+      }
+    </mat-form-field>
 
-  <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Countries</mat-label>
-    <input matInput placeholder="Countries" formControlName="countries" />
-  </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Countries</mat-label>
+      <input matInput formControlName="countries" placeholder="e.g. SQ" />
+      @if (briefingForm.get('countries')?.hasError('pattern')) {
+      <mat-error>2 uppercase letters separated by spaces (e.g. SQ)</mat-error>
+      }
+    </mat-form-field>
+  </div>
 
-  <button matButton="filled" class="mt-4 self-start" >
-    Create Briefing
+  @if (briefingForm.hasError('atLeastOneLocation') && briefingForm.touched) {
+  <mat-error>At least one airport or country is required</mat-error>
+  }
+  <button matButton="filled" class="mt-4 self-start" [disabled]="isLoading()">
+    <div class="flex items-center gap-2">
+      @if (isLoading()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      }
+      Create Briefing
+    </div>
   </button>
 </form>

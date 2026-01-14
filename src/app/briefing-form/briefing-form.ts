@@ -1,19 +1,14 @@
-import { Component, inject } from '@angular/core'
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-} from '@angular/forms'
+import { Component, inject, signal } from '@angular/core'
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { finalize } from 'rxjs'
+import { atLeastOneLocation, atLeastOneSelected } from '../../validators/briefing-form.validators'
 
-const atLeastOneChecked: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  return Object.values(control.value).some(v => v === true) ? null : { required: true }
-}
+import { BriefingService } from '../services/briefing.service'
 
 @Component({
   selector: 'app-briefing-form',
@@ -24,26 +19,45 @@ const atLeastOneChecked: ValidatorFn = (control: AbstractControl): ValidationErr
     MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './briefing-form.html',
 })
 export class BriefingForm {
   private readonly formBuilder = inject(FormBuilder)
+  private readonly briefingService = inject(BriefingService)
 
-  briefingForm = this.formBuilder.nonNullable.group({
-    reportTypes: this.formBuilder.nonNullable.group({
-      METAR: false,
-      SIGMET: false,
-      TAF_LONGTAF: false,
+  isLoading = signal(false)
+
+  briefingForm = this.formBuilder.nonNullable.group(
+    {
+      reportTypes: this.formBuilder.nonNullable.group(
+        {
+          metar: [false],
+          sigmet: [false],
+          taf: [false],
+        },
+        { validators: atLeastOneSelected() },
+      ),
+      stations: ['', [Validators.pattern(/^[A-Z]{4}( [A-Z]{4})*$/)]],
+      countries: ['', [Validators.pattern(/^[A-Z]{2}( [A-Z]{2})*$/)]],
     },
-    { validators: atLeastOneChecked },
-    ),
-    airports: [[]],
-    countries: [[]],
-  })
+    { validators: atLeastOneLocation() },
+  )
 
   onSubmit(): void {
-    if (this.briefingForm.invalid) return
-    console.log(this.briefingForm.getRawValue())
+    if (this.briefingForm.invalid) {
+      this.briefingForm.markAllAsTouched()
+      return
+    }
+
+    this.isLoading.set(true)
+    this.briefingService
+      .getBriefing(this.briefingForm.getRawValue())
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: response => console.log('API Response:', response),
+        error: error => console.error('API Error:', error),
+      })
   }
 }
