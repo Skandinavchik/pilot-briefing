@@ -24,13 +24,8 @@ export class BriefingService {
 
   getBriefing(formData: BriefingFormData): Observable<unknown> {
     this.handleQueryCounter()
-    const selectedReportTypes: string[] = []
 
-    if (formData.reportTypes.metar) selectedReportTypes.push('METAR')
-    if (formData.reportTypes.sigmet) selectedReportTypes.push('SIGMET')
-    if (formData.reportTypes.taf) selectedReportTypes.push('TAF_LONGTAF')
-
-    const requestBody = this.handleRequestBody(selectedReportTypes, formData)
+    const requestBody = this.handleRequestBody(formData)
 
     this.isLoading.set(true)
     return this.http.post(this.apiUrl, requestBody).pipe(finalize(() => this.isLoading.set(false)))
@@ -53,7 +48,13 @@ export class BriefingService {
     })
   }
 
-  private handleRequestBody(selectedReportTypes: string[], formData: BriefingFormData) {
+  private handleRequestBody(formData: BriefingFormData) {
+    const selectedReportTypes: string[] = []
+
+    if (formData.reportTypes.metar) selectedReportTypes.push('METAR')
+    if (formData.reportTypes.sigmet) selectedReportTypes.push('SIGMET')
+    if (formData.reportTypes.taf) selectedReportTypes.push('TAF_LONGTAF')
+
     return {
       id: `query${this.queryCounter()}`,
       method: 'query',
