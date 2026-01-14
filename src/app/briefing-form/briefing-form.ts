@@ -7,7 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { atLeastOneLocation, atLeastOneSelected } from '../../validators/briefing-form.validators'
-
 import { BriefingService } from '../services/briefing.service'
 
 @Component({

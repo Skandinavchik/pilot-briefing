@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core'
 import { BriefingForm } from './briefing-form/briefing-form'
+import { BriefingTable } from './briefing-table/briefing-table'
 
 @Component({
   selector: 'app-root',
-  imports: [BriefingForm],
+  imports: [BriefingForm, BriefingTable],
   templateUrl: './app.html',
 })
 export class App {

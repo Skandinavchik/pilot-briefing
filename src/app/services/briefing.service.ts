@@ -20,8 +20,10 @@ export class BriefingService {
   private readonly apiUrl = 'https://ogcie.iblsoft.com/ria/opmetquery'
 
   isLoading = signal(false)
+  queryCounter = signal('00')
 
   getBriefing(formData: BriefingFormData): Observable<unknown> {
+    this.handleQueryCounter()
     const selectedReportTypes: string[] = []
 
     if (formData.reportTypes.metar) selectedReportTypes.push('METAR')
@@ -29,11 +31,11 @@ export class BriefingService {
     if (formData.reportTypes.taf) selectedReportTypes.push('TAF_LONGTAF')
 
     const requestBody = {
-      id: 'query01',
+      id: `query${this.queryCounter()}`,
       method: 'query',
       params: [
         {
-          id: 'briefing01',
+          id: `briefing${this.queryCounter()}`,
           reportTypes: selectedReportTypes,
           stations: this.parseCodeList(formData.stations),
           countries: this.parseCodeList(formData.countries),
@@ -52,5 +54,13 @@ export class BriefingService {
         .map(s => s.trim())
         .filter(s => s.length > 0)
       : []
+  }
+
+  private handleQueryCounter() {
+    this.queryCounter.update(counter => {
+      const newCounter = +counter + 1
+      if (newCounter < 10) return `0${newCounter}`
+      return `${newCounter}`
+    })
   }
 }
