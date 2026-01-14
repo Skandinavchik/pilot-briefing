@@ -30,18 +30,7 @@ export class BriefingService {
     if (formData.reportTypes.sigmet) selectedReportTypes.push('SIGMET')
     if (formData.reportTypes.taf) selectedReportTypes.push('TAF_LONGTAF')
 
-    const requestBody = {
-      id: `query${this.queryCounter()}`,
-      method: 'query',
-      params: [
-        {
-          id: `briefing${this.queryCounter()}`,
-          reportTypes: selectedReportTypes,
-          stations: this.parseCodeList(formData.stations),
-          countries: this.parseCodeList(formData.countries),
-        },
-      ],
-    }
+    const requestBody = this.handleRequestBody(selectedReportTypes, formData)
 
     this.isLoading.set(true)
     return this.http.post(this.apiUrl, requestBody).pipe(finalize(() => this.isLoading.set(false)))
@@ -62,5 +51,20 @@ export class BriefingService {
       if (newCounter < 10) return `0${newCounter}`
       return `${newCounter}`
     })
+  }
+
+  private handleRequestBody(selectedReportTypes: string[], formData: BriefingFormData) {
+    return {
+      id: `query${this.queryCounter()}`,
+      method: 'query',
+      params: [
+        {
+          id: `briefing${this.queryCounter()}`,
+          reportTypes: selectedReportTypes,
+          stations: this.parseCodeList(formData.stations),
+          countries: this.parseCodeList(formData.countries),
+        },
+      ],
+    }
   }
 }
