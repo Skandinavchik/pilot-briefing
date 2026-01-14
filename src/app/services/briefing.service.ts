@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
-import { Injectable, inject } from '@angular/core'
-import { Observable } from 'rxjs'
+import { Injectable, inject, signal } from '@angular/core'
+import { Observable, finalize } from 'rxjs'
 
 export interface BriefingFormData {
   reportTypes: {
@@ -18,6 +18,8 @@ export interface BriefingFormData {
 export class BriefingService {
   private readonly http = inject(HttpClient)
   private readonly apiUrl = 'https://ogcie.iblsoft.com/ria/opmetquery'
+
+  isLoading = signal(false)
 
   getBriefing(formData: BriefingFormData): Observable<unknown> {
     const selectedReportTypes: string[] = []
@@ -39,7 +41,8 @@ export class BriefingService {
       ],
     }
 
-    return this.http.post(this.apiUrl, requestBody)
+    this.isLoading.set(true)
+    return this.http.post(this.apiUrl, requestBody).pipe(finalize(() => this.isLoading.set(false)))
   }
 
   private parseCodeList(input: string): string[] {

@@ -1,11 +1,10 @@
-import { Component, inject, signal } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
-import { finalize } from 'rxjs'
 import { atLeastOneLocation, atLeastOneSelected } from '../../validators/briefing-form.validators'
 
 import { BriefingService } from '../services/briefing.service'
@@ -25,9 +24,7 @@ import { BriefingService } from '../services/briefing.service'
 })
 export class BriefingForm {
   private readonly formBuilder = inject(FormBuilder)
-  private readonly briefingService = inject(BriefingService)
-
-  isLoading = signal(false)
+  public readonly briefingService = inject(BriefingService)
 
   briefingForm = this.formBuilder.nonNullable.group(
     {
@@ -51,13 +48,9 @@ export class BriefingForm {
       return
     }
 
-    this.isLoading.set(true)
-    this.briefingService
-      .getBriefing(this.briefingForm.getRawValue())
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe({
-        next: response => console.log('API Response:', response),
-        error: error => console.error('API Error:', error),
-      })
+    this.briefingService.getBriefing(this.briefingForm.getRawValue()).subscribe({
+      next: response => console.log('API Response:', response),
+      error: error => console.error('API Error:', error),
+    })
   }
 }

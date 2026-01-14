@@ -35,9 +35,9 @@
   @if (briefingForm.hasError('atLeastOneLocation') && briefingForm.touched) {
   <mat-error>At least one airport or country is required</mat-error>
   }
-  <button matButton="filled" class="mt-4 self-start" [disabled]="isLoading()">
+  <button matButton="filled" class="mt-4 self-end" [disabled]="briefingService.isLoading()">
     <div class="flex items-center gap-2">
-      @if (isLoading()) {
+      @if (briefingService.isLoading()) {
       <mat-spinner diameter="20"></mat-spinner>
       }
       Create Briefing
