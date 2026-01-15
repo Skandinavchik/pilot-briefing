@@ -1,10 +1,10 @@
-<main class="container max-w-4xl p-4">
+<main class="container max-w-4xl p-4 space-y-6">
   <section>
     <h1 class="mb-6 text-2xl text-center font-bold">{{ title() }}</h1>
     <app-briefing-form (briefingData)="briefingData.set($event)" />
   </section>
 
-  <section>
+  <section class="shadow-md">
     <app-briefing-table [data]="briefingData()" />
   </section>
 </main>

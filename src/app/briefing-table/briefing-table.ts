@@ -9,19 +9,15 @@ import { BriefingResult, GroupedBriefingResult } from '../../types/briefing.type
 })
 export class BriefingTable {
   data = input.required<GroupedBriefingResult[]>()
-
-  // Flatten the grouped data for the table
-  // We need rows for Stations (headers) and rows for Reports (items)
   tableData = computed(() => {
     const flattened: (GroupedBriefingResult | BriefingResult)[] = []
     for (const group of this.data()) {
-      flattened.push(group) // Station header row
-      flattened.push(...group.reports) // Report items
+      flattened.push(group)
+      flattened.push(...group.reports)
     }
     return flattened
   })
 
-  // Helper to check if row is a group header
   isGroup(index: number, item: GroupedBriefingResult | BriefingResult): boolean {
     return 'reports' in item
   }
