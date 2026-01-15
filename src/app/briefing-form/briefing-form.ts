@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -37,11 +37,27 @@ export class BriefingForm {
         },
         { validators: atLeastOneSelected() },
       ),
-      stations: ['', [Validators.pattern(/^[A-Z]{4}( [A-Z]{4})*$/)]],
-      countries: ['', [Validators.pattern(/^[A-Z]{2}( [A-Z]{2})*$/)]],
+      stations: ['', [Validators.pattern(/^([A-Z]{4})( [A-Z]{4})*$/)]],
+      countries: ['', [Validators.pattern(/^([A-Z]{2})( [A-Z]{2})*$/)]],
     },
     { validators: atLeastOneLocation() },
   )
+
+  constructor() {
+    this.forceUppercase(this.briefingForm.controls.stations)
+    this.forceUppercase(this.briefingForm.controls.countries)
+  }
+
+  private forceUppercase(control: FormControl<string>): void {
+    control.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(value => {
+        const uppercased = value.toUpperCase()
+        if (value !== uppercased) {
+          control.setValue(uppercased, { emitEvent: false })
+        }
+      })
+  }
 
   onSubmit(): void {
     if (this.briefingForm.invalid) {

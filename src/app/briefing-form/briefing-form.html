@@ -32,7 +32,8 @@
     </mat-form-field>
   </div>
 
-  @if (briefingForm.hasError('atLeastOneLocation') && briefingForm.touched) {
+  @if (briefingForm.hasError('atLeastOneLocation') && (briefingForm.get('stations')?.touched ||
+  briefingForm.get('countries')?.touched)) {
   <mat-error>At least one airport or country is required</mat-error>
   }
   <button matButton="filled" class="mt-4 self-end" [disabled]="briefingService.isLoading()">
