@@ -11,8 +11,6 @@ export class BriefingTable {
   data = input.required<GroupedBriefingResult[] | null>()
   error = input<string | null>(null)
 
-  // Flatten the grouped data for the table
-  // We need rows for Stations (headers) and rows for Reports (items)
   tableData = computed(() => {
     const data = this.data()
     if (!data) return []

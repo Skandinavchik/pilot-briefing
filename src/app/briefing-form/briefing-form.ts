@@ -76,13 +76,11 @@ export class BriefingForm {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          console.log('API Response:', response)
           if (response.error) {
             this.briefingError.emit(response.error)
             this.briefingData.emit([]) // Or null, but the type is GroupedBriefingResult[]
           } else {
             const groupedData = this.briefingService.groupResultsByStation(response.result)
-            console.log('Grouped Data:', groupedData)
             this.briefingData.emit(groupedData)
             this.briefingError.emit(null)
           }
