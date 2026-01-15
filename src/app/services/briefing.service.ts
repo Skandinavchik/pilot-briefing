@@ -1,16 +1,9 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable, inject, signal } from '@angular/core'
 import { Observable, finalize } from 'rxjs'
-
-export interface BriefingFormData {
-  reportTypes: {
-    metar: boolean
-    sigmet: boolean
-    taf: boolean
-  }
-  stations: string
-  countries: string
-}
+import { BriefingFormData, BriefingResponse, BriefingResult, GroupedBriefingResult } from '../../types/briefing.type'
+import { formatInTimeZone } from 'date-fns-tz'
+import { sk } from 'date-fns/locale'
 
 @Injectable({
   providedIn: 'root',
@@ -22,13 +15,36 @@ export class BriefingService {
   isLoading = signal(false)
   queryCounter = signal('00')
 
-  getBriefing(formData: BriefingFormData): Observable<unknown> {
-    this.handleQueryCounter()
-
+  getBriefing(formData: BriefingFormData): Observable<BriefingResponse> {
     const requestBody = this.handleRequestBody(formData)
 
     this.isLoading.set(true)
-    return this.http.post(this.apiUrl, requestBody).pipe(finalize(() => this.isLoading.set(false)))
+    return this.http
+      .post<BriefingResponse>(this.apiUrl, requestBody)
+      .pipe(finalize(() => this.isLoading.set(false)))
+  }
+
+  groupResultsByStation(results: BriefingResult[]): GroupedBriefingResult[] {
+    const grouped = new Map<string, BriefingResult[]>()
+
+    for (const result of results) {
+      const stationId = result.stationId
+      const current = grouped.get(stationId) ?? []
+      current.push({
+        ...result,
+        reportTime: this.formatReportDate(result.reportTime),
+      })
+      grouped.set(stationId, current)
+    }
+
+    return Array.from(grouped.entries()).map(([stationId, reports]) => ({
+      stationId,
+      reports,
+    }))
+  }
+
+  private formatReportDate(dateString: string): string {
+    return formatInTimeZone(dateString, 'Europe/Bratislava', 'd. M. yyyy HH:mm', { locale: sk })
   }
 
   private parseCodeList(input: string): string[] {
@@ -49,6 +65,7 @@ export class BriefingService {
   }
 
   private handleRequestBody(formData: BriefingFormData) {
+    this.handleQueryCounter()
     const selectedReportTypes: string[] = []
 
     if (formData.reportTypes.metar) selectedReportTypes.push('METAR')

@@ -53,7 +53,11 @@ export class BriefingForm {
       .getBriefing(this.briefingForm.getRawValue())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: response => console.log('API Response:', response),
+        next: response => {
+          console.log('API Response:', response)
+          const groupedData = this.briefingService.groupResultsByStation(response.result)
+          console.log('Grouped Data:', groupedData)
+        },
         error: error => console.error('API Error:', error),
       })
   }
