@@ -29,6 +29,7 @@ export class BriefingForm {
   public readonly briefingService = inject(BriefingService)
 
   briefingData = output<GroupedBriefingResult[]>()
+  briefingError = output<string | null>()
 
   briefingForm = this.formBuilder.nonNullable.group(
     {
@@ -68,17 +69,29 @@ export class BriefingForm {
       return
     }
 
+    this.briefingError.emit(null)
+
     this.briefingService
       .getBriefing(this.briefingForm.getRawValue())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           console.log('API Response:', response)
-          const groupedData = this.briefingService.groupResultsByStation(response.result)
-          console.log('Grouped Data:', groupedData)
-          this.briefingData.emit(groupedData)
+          if (response.error) {
+            this.briefingError.emit(response.error)
+            this.briefingData.emit([]) // Or null, but the type is GroupedBriefingResult[]
+          } else {
+            const groupedData = this.briefingService.groupResultsByStation(response.result)
+            console.log('Grouped Data:', groupedData)
+            this.briefingData.emit(groupedData)
+            this.briefingError.emit(null)
+          }
         },
-        error: error => console.error('API Error:', error),
+        error: error => {
+          console.error('API Error:', error)
+          this.briefingError.emit('An unexpected error occurred. Please try again later.')
+          this.briefingData.emit([])
+        },
       })
   }
 }

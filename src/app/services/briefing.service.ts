@@ -10,7 +10,7 @@ import { sk } from 'date-fns/locale'
 })
 export class BriefingService {
   private readonly http = inject(HttpClient)
-  private readonly apiUrl = 'https://ogcie.iblsoft.com/ria/opmetquery'
+  private readonly apiUrl = 'https://ogcie.iblsoft.com/ria/opmetquerya'
 
   isLoading = signal(false)
   queryCounter = signal('00')

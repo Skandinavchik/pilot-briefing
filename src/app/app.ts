@@ -10,5 +10,6 @@ import { GroupedBriefingResult } from '../types/briefing.type'
 })
 export class App {
   protected readonly title = signal('Pilot Briefing App')
-  protected readonly briefingData = signal<GroupedBriefingResult[]>([])
+  protected readonly briefingData = signal<GroupedBriefingResult[] | null>(null)
+  protected readonly error = signal<string | null>(null)
 }

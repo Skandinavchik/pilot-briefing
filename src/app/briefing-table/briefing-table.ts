@@ -8,10 +8,17 @@ import { BriefingResult, GroupedBriefingResult } from '../../types/briefing.type
   templateUrl: './briefing-table.html',
 })
 export class BriefingTable {
-  data = input.required<GroupedBriefingResult[]>()
+  data = input.required<GroupedBriefingResult[] | null>()
+  error = input<string | null>(null)
+
+  // Flatten the grouped data for the table
+  // We need rows for Stations (headers) and rows for Reports (items)
   tableData = computed(() => {
+    const data = this.data()
+    if (!data) return []
+
     const flattened: (GroupedBriefingResult | BriefingResult)[] = []
-    for (const group of this.data()) {
+    for (const group of data) {
       flattened.push(group)
       flattened.push(...group.reports)
     }
