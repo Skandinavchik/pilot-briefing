@@ -6,7 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
-import { GroupedBriefingResult } from '../../types/briefing.type'
+import { BriefingResult } from '../../types/briefing.type'
 import { atLeastOneLocation, atLeastOneSelected } from '../../validators/briefing-form.validators'
 import { BriefingService } from '../services/briefing.service'
 
@@ -28,7 +28,7 @@ export class BriefingForm {
   private readonly destroyRef = inject(DestroyRef)
   public readonly briefingService = inject(BriefingService)
 
-  briefingData = output<GroupedBriefingResult[]>()
+  briefingData = output<BriefingResult[]>()
   briefingError = output<string | null>()
 
   briefingForm = this.formBuilder.nonNullable.group(
@@ -80,8 +80,7 @@ export class BriefingForm {
             this.briefingError.emit(response.error)
             this.briefingData.emit([])
           } else {
-            const groupedData = this.briefingService.groupResultsByStation(response.result)
-            this.briefingData.emit(groupedData)
+            this.briefingData.emit(response.result)
             this.briefingError.emit(null)
           }
         },

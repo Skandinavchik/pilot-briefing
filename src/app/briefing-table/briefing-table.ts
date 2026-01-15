@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core'
 import { MatTableModule } from '@angular/material/table'
-import { BriefingResult, GroupedBriefingResult } from '../../types/briefing.type'
+import { BriefingResult } from '../../types/briefing.type'
 
 @Component({
   selector: 'app-briefing-table',
@@ -8,24 +8,26 @@ import { BriefingResult, GroupedBriefingResult } from '../../types/briefing.type
   templateUrl: './briefing-table.html',
 })
 export class BriefingTable {
-  data = input.required<GroupedBriefingResult[] | null>()
+  data = input.required<BriefingResult[] | null>()
   error = input<string | null>(null)
 
-  tableData = computed(() => {
+  protected readonly groupedData = computed(() => {
     const data = this.data()
     if (!data) return []
 
-    const flattened: (GroupedBriefingResult | BriefingResult)[] = []
-    for (const group of data) {
-      flattened.push(group)
-      flattened.push(...group.reports)
+    const groups = new Map<string, BriefingResult[]>()
+    for (const report of data) {
+      const station = report.stationId
+      const current = groups.get(station) ?? []
+      current.push(report)
+      groups.set(station, current)
     }
-    return flattened
-  })
 
-  isGroup(index: number, item: GroupedBriefingResult | BriefingResult): boolean {
-    return 'reports' in item
-  }
+    return Array.from(groups.entries()).map(([stationId, reports]) => ({
+      stationId,
+      reports,
+    }))
+  })
 
   formatReportText(text: string): string {
     return text.replace(/(BKN|FEW|SCT)(\d{3})/g, (match, _, height) => {

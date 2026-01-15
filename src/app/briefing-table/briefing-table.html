@@ -5,37 +5,41 @@
 </p>
 } @else if (data(); as results) {
 @if (results.length > 0) {
-<table mat-table [dataSource]="tableData()" class="w-full">
-  <ng-container matColumnDef="stationHeader">
-    <td mat-cell *matCellDef="let group" [attr.colspan]="3"
-      class="font-bold p-2 border border-(--mat-sys-outline-variant)!">
+<div class="flex flex-col gap-4">
+  @for (group of groupedData(); track group.stationId) {
+  <div class="border border-(--mat-sys-outline-variant)">
+    <!-- Group Header -->
+    <div class="bg-(--mat-sys-surface-container-low) p-2 font-bold border-b border-(--mat-sys-outline-variant)">
       {{ group.stationId }}
-    </td>
-  </ng-container>
+    </div>
 
-  <ng-container matColumnDef="queryType">
-    <td mat-cell *matCellDef="let report" class="p-2 border border-(--mat-sys-outline-variant)! align-top w-24">
-      {{ report.queryType }}
-    </td>
-  </ng-container>
+    <!-- Group Table -->
+    <table mat-table [dataSource]="group.reports" class="w-full">
+      <ng-container matColumnDef="queryType">
+        <td mat-cell *matCellDef="let report"
+          class="p-2 border-b border-r border-(--mat-sys-outline-variant)! align-top w-24">
+          {{ report.queryType }}
+        </td>
+      </ng-container>
 
-  <ng-container matColumnDef="reportTime">
-    <td mat-cell *matCellDef="let report" class="p-2 border border-(--mat-sys-outline-variant)! align-top w-40">
-      {{ report.reportTime }}
-    </td>
-  </ng-container>
+      <ng-container matColumnDef="reportTime">
+        <td mat-cell *matCellDef="let report"
+          class="p-2 border-b border-r border-(--mat-sys-outline-variant)! align-top w-40">
+          {{ report.reportTime }}
+        </td>
+      </ng-container>
 
-  <ng-container matColumnDef="text">
-    <td mat-cell *matCellDef="let report" class="p-2 border border-(--mat-sys-outline-variant)! align-top">
-      <div [innerHTML]="formatReportText(report.text)"></div>
-    </td>
-  </ng-container>
+      <ng-container matColumnDef="text">
+        <td mat-cell *matCellDef="let report" class="p-2 border-b border-(--mat-sys-outline-variant)! align-top">
+          <div [innerHTML]="formatReportText(report.text)"></div>
+        </td>
+      </ng-container>
 
-  <tr mat-row *matRowDef="let row; columns: ['stationHeader']; when: isGroup"
-    class="border border-(--mat-sys-outline-variant)!"></tr>
-  <tr mat-row *matRowDef="let row; columns: ['queryType', 'reportTime', 'text']"
-    class="border border-(--mat-sys-outline-variant)!"></tr>
-</table>
+      <tr mat-row *matRowDef="let row; columns: ['queryType', 'reportTime', 'text']" class="last:border-none!"></tr>
+    </table>
+  </div>
+  }
+</div>
 } @else {
 <p class="text-center p-4 italic text-gray-500">No results found.</p>
 }

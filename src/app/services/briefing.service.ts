@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable, inject, signal } from '@angular/core'
-import { Observable, finalize } from 'rxjs'
-import { BriefingFormData, BriefingResponse, BriefingResult, GroupedBriefingResult } from '../../types/briefing.type'
+import { Observable, finalize, map } from 'rxjs'
+import { BriefingFormData, BriefingResponse } from '../../types/briefing.type'
 import { formatInTimeZone } from 'date-fns-tz'
 import { sk } from 'date-fns/locale'
 
@@ -21,26 +21,18 @@ export class BriefingService {
     this.isLoading.set(true)
     return this.http
       .post<BriefingResponse>(this.apiUrl, requestBody)
-      .pipe(finalize(() => this.isLoading.set(false)))
-  }
-
-  groupResultsByStation(results: BriefingResult[]): GroupedBriefingResult[] {
-    const grouped = new Map<string, BriefingResult[]>()
-
-    for (const result of results) {
-      const stationId = result.stationId
-      const current = grouped.get(stationId) ?? []
-      current.push({
-        ...result,
-        reportTime: this.formatReportDate(result.reportTime),
-      })
-      grouped.set(stationId, current)
-    }
-
-    return Array.from(grouped.entries()).map(([stationId, reports]) => ({
-      stationId,
-      reports,
-    }))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        map(response => {
+          if (response.result) {
+            response.result = response.result.map(result => ({
+              ...result,
+              reportTime: this.formatReportDate(result.reportTime),
+            }))
+          }
+          return response
+        }),
+      )
   }
 
   private formatReportDate(dateString: string): string {
