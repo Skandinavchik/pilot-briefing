@@ -78,7 +78,7 @@ export class BriefingForm {
         next: response => {
           if (response.error) {
             this.briefingError.emit(response.error)
-            this.briefingData.emit([]) // Or null, but the type is GroupedBriefingResult[]
+            this.briefingData.emit([])
           } else {
             const groupedData = this.briefingService.groupResultsByStation(response.result)
             this.briefingData.emit(groupedData)
