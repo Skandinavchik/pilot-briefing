@@ -1,14 +1,35 @@
-<table mat-table [dataSource]=dataSource>
-  <ng-container matColumnDef="position">
-    <th mat-header-cell *matHeaderCellDef> No. </th>
-    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+@if (data().length > 0) {
+<table mat-table [dataSource]="tableData()" class="w-full border-collapse border border-gray-300">
+  <!-- Station Header Row Definition -->
+  <ng-container matColumnDef="stationHeader">
+    <td mat-cell *matCellDef="let group" [attr.colspan]="3" class="bg-gray-200 font-bold p-2 border border-gray-300">
+      {{ group.stationId }}
+    </td>
   </ng-container>
 
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> Name </th>
-    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+  <!-- Report Type Column -->
+  <ng-container matColumnDef="queryType">
+    <td mat-cell *matCellDef="let report" class="p-2 border border-gray-300 align-top w-24">
+      {{ report.queryType }}
+    </td>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <!-- Report Time Column -->
+  <ng-container matColumnDef="reportTime">
+    <td mat-cell *matCellDef="let report" class="p-2 border border-gray-300 align-top w-40">
+      {{ report.reportTime }}
+    </td>
+  </ng-container>
+
+  <!-- Report Text Column -->
+  <ng-container matColumnDef="text">
+    <td mat-cell *matCellDef="let report" class="p-2 border border-gray-300 align-top">
+      <div [innerHTML]="formatReportText(report.text)"></div>
+    </td>
+  </ng-container>
+
+  <!-- Row Definitions -->
+  <tr mat-row *matRowDef="let row; columns: ['stationHeader']; when: isGroup"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['queryType', 'reportTime', 'text']"></tr>
 </table>
+}

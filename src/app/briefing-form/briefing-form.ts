@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core'
+import { Component, DestroyRef, inject, output } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -6,6 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { GroupedBriefingResult } from '../../types/briefing.type'
 import { atLeastOneLocation, atLeastOneSelected } from '../../validators/briefing-form.validators'
 import { BriefingService } from '../services/briefing.service'
 
@@ -26,6 +27,8 @@ export class BriefingForm {
   private readonly formBuilder = inject(FormBuilder)
   private readonly destroyRef = inject(DestroyRef)
   public readonly briefingService = inject(BriefingService)
+
+  briefingData = output<GroupedBriefingResult[]>()
 
   briefingForm = this.formBuilder.nonNullable.group(
     {
@@ -73,6 +76,7 @@ export class BriefingForm {
           console.log('API Response:', response)
           const groupedData = this.briefingService.groupResultsByStation(response.result)
           console.log('Grouped Data:', groupedData)
+          this.briefingData.emit(groupedData)
         },
         error: error => console.error('API Error:', error),
       })
